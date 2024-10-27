@@ -1,15 +1,16 @@
 // Set canvas to window size
 let canvas = document.getElementById("myCanvas");
-const gl = canvas.getContext("webgl");
+// const canvas = DOM.canvas(500, 500);
 const windowHeight = window.innerHeight;
 
 // Render width of the canvas
-const gridWidth = 500;
+const gridWidth = 1000;
 const aspectRatio = window.innerHeight / window.innerWidth;
 
 const gridHeight = Math.round(gridWidth * aspectRatio);
 canvas.setAttribute("width", gridWidth);
 canvas.setAttribute("height", gridHeight);
+const gl = canvas.getContext("webgl2", { premultipliedAlpha: false });
 const scaledGridWidth = canvas.offsetWidth;
 const scaledGridHeight = canvas.offsetHeight;
 const inteval = 1;
@@ -56,10 +57,11 @@ for (let i = 0; i < gridHeight; i++) {
 }
 
 const gpu = new window.GPU.GPU({
-  webGl: gl,
+  canvas,
+  context: gl,
 });
-gl.enable(gl.BLEND);
-gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+// gl.enable(gl.BLEND);
+// gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 const createCanvas = gpu.createKernel(
   function (xArray, yArray, xMin, xMax, yMin, yMax, canvas) {
     const oldX =
@@ -98,7 +100,7 @@ const createCanvas = gpu.createKernel(
       //   1
       // );
       // return [0, 0, 0, 1];
-      this.color(0, 0, 1, 0);
+      this.color(0, 0, 1, brightness);
       // const brightness = scale(iteration);
       // console.log(brightness);
       // context.fillStyle = `rgb(0,0,255,${brightness})`;
@@ -131,6 +133,7 @@ function drawGraph2() {
   const colors = createCanvas(xArray, yArray, xMin, xMax, yMin, yMax, canvas);
   const canvas2 = createCanvas.canvas;
   canvas2.id = "myCanvas";
+  canvas2.style = style = "width: 100%";
   canvas.parentNode.replaceChild(canvas2, canvas);
   canvas = document.getElementById("myCanvas");
   document.getElementsByTagName("body")[0].appendChild(canvas2);
